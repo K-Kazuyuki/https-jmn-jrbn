@@ -6,7 +6,6 @@ type Props = {
   imgSrc: string;
   alt: string;
   text: string;
-  link?: string | undefined;
 };
 
 const PageCard: FC<Props> = (props) => {
@@ -14,11 +13,11 @@ const PageCard: FC<Props> = (props) => {
     <Card
       sx={{
         maxWidth: 345,
-        cursor: props.link ? "pointer" : "default",
+        cursor: props.href ? "pointer" : "default",
       }}
       onClick={() => {
-        if (props.link) {
-          window.location.href = props.link;
+        if (props.href) {
+          window.location.href = props.href;
         }
       }}
     >

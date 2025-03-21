@@ -1,25 +1,52 @@
-import PageCard from "./PageCard";
+import React, { useEffect, useState } from "react";
+import PageCard from "./components/PageCard";
 
 const Home = () => {
+  const [columns, setColumns] = useState("1fr");
+
+  useEffect(() => {
+    const updateColumns = () => {
+      const width = window.innerWidth;
+      if (width > 500) {
+        const n = Math.floor((width - 100) / 200);
+        setColumns(`repeat(${n}, 1fr)`);
+      } else {
+        setColumns("1fr");
+      }
+    };
+
+    updateColumns(); // 初期化
+    window.addEventListener("resize", updateColumns);
+    return () => window.removeEventListener("resize", updateColumns);
+  }, []);
+
   return (
     <>
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-around",
+          display: "grid",
+          gridTemplateColumns: columns,
+          gap: "20px",
           marginTop: "20px",
         }}
       >
-        <div style={{ width: "200px", padding: "10px" }}>
+        <div style={{ padding: "10px" }}>
           <PageCard
-            href="/page1"
-            imgSrc="/images/writing_002.png"
-            alt="みんなで書く"
-            text="みんなで書く"
-            link="https://jarebon.com/"
+            href="https://jarebon.com/"
+            imgSrc="/images/flag_001.png"
+            alt="ゲームを始める"
+            text="ゲームを始める"
           />
         </div>
-        <div style={{ width: "200px", padding: "10px" }}>
+        <div style={{ padding: "10px" }}>
+          <PageCard
+            imgSrc="/images/writing_002.png"
+            alt="ゲームに参加"
+            text="ゲームに参加"
+            href="https://jarebon.com/"
+          />
+        </div>
+        <div style={{ padding: "10px" }}>
           <PageCard
             href="/page2"
             imgSrc="/images/books_002.png"
