@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PageCard from "./components/PageCard";
 
 const Home = () => {
@@ -27,7 +27,7 @@ const Home = () => {
           display: "grid",
           gridTemplateColumns: columns,
           gap: "20px",
-          marginTop: "20px",
+          marginTop: "40px",
         }}
       >
         <div style={{ padding: "10px" }}>
