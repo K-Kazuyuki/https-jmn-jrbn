@@ -32,7 +32,7 @@ const Home = () => {
       >
         <div style={{ padding: "10px" }}>
           <PageCard
-            href="https://jarebon.com/"
+            href="/start-game"
             imgSrc="/images/flag_001.png"
             alt="ゲームを始める"
             text="ゲームを始める"
