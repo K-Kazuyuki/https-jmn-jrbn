@@ -17,7 +17,7 @@ const Footer = () => {
                 </Link>
               </Grid>
               <Grid size={{ xs: 4 }}>
-                <Link href="#" sx={{ color: "white" }}>
+                <Link href="https://courts.party" sx={{ color: "white" }}>
                   About
                 </Link>
               </Grid>
