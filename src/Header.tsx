@@ -5,7 +5,7 @@ const Header = () => {
     <AppBar position="fixed" color="primary" sx={{ top: 0 }}>
       <Toolbar>
         <Typography variant="h5" sx={{ flexGrow: 1 }}>
-          あれ本
+          小説しりとり
         </Typography>
       </Toolbar>
     </AppBar>
