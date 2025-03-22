@@ -30,7 +30,7 @@ const Home = () => {
           marginTop: "40px",
         }}
       >
-        <div style={{ padding: "10px" }}>
+        <div style={{ padding: "10px", maxWidth: 345, minWidth: 200 }}>
           <PageCard
             href="/start-game"
             imgSrc="/images/flag_001.png"
@@ -38,7 +38,7 @@ const Home = () => {
             text="ゲームを始める"
           />
         </div>
-        <div style={{ padding: "10px" }}>
+        <div style={{ padding: "10px", maxWidth: 345, minWidth: 200 }}>
           <PageCard
             imgSrc="/images/writing_002.png"
             alt="ゲームに参加"
@@ -46,12 +46,12 @@ const Home = () => {
             href="https://jarebon.com/"
           />
         </div>
-        <div style={{ padding: "10px" }}>
+        <div style={{ padding: "10px", maxWidth: 345, minWidth: 200 }}>
           <PageCard
-            href="/page2"
             imgSrc="/images/books_002.png"
             alt="いままでの記録"
             text="いままでの記録"
+            href="https://jarebon.com/"
           />
         </div>
       </div>

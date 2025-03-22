@@ -12,8 +12,6 @@ const PageCard: FC<Props> = (props) => {
   return (
     <Card
       sx={{
-        maxWidth: 345,
-        minWidth: 200,
         cursor: props.href ? "pointer" : "default",
       }}
       onClick={() => {
