@@ -6,6 +6,10 @@ export default defineConfig(({ mode }) => ({
   plugins: [react()],
   server: {
     proxy:
-      mode === "development" ? { "/api": "http://127.0.0.1:8787" } : undefined,
+      mode === "development"
+        ? { "/api": "http://127.0.0.1:8787" }
+        : mode === "production"
+        ? { "/api": "https-jrbn-backend.kisidakazuyuki.workers.dev" }
+        : undefined,
   },
 }));
