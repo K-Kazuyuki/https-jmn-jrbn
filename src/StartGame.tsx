@@ -88,13 +88,37 @@ const StartGamePage = () => {
           color="primary"
           style={{ margin: "20px" }}
           onClick={() => {
-            console.log(`セッション名: ${sessionName}`);
-            console.log(`プレイヤー名: ${playerName}`);
-            console.log(`参加者上限: ${playerLimit}`);
-            console.log(`制限時間: ${timeLimit}`);
             if (validate()) {
-              // ゲーム画面に遷移
-              window.location.href = "/game";
+              fetch("/api/createGameSession", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  sessionName,
+                  playerName,
+                  playerLimit,
+                  timeLimit,
+                }),
+              })
+                .then((response) => {
+                  if (!response.ok) {
+                    throw new Error("Failed to start the game");
+                  }
+                  return response.json();
+                })
+                .then((data) => {
+                  console.log("Game started successfully:", data);
+                  // ゲーム画面に遷移
+                  window.location.href = `/game?sessionId=${data.sessionId}`; // 例：sessionIdをURLパラメータとして渡す
+                })
+                .catch((error) => {
+                  console.error("Error starting the game:", error);
+                  // エラーメッセージを表示
+                  alert(
+                    "ゲームの開始に失敗しました。詳細はコンソールを確認してください。"
+                  );
+                });
             }
           }}
         >
