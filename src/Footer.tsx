@@ -12,7 +12,7 @@ const Footer = () => {
           <Container maxWidth="md">
             <Grid container spacing={2}>
               <Grid size={{ xs: 4 }}>
-                <Link href="#" sx={{ color: "white" }}>
+                <Link href="/" sx={{ color: "white" }}>
                   Home
                 </Link>
               </Grid>
