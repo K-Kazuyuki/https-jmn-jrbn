@@ -2,15 +2,15 @@ import { Button, Slider, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 
 const StartGamePage = () => {
-  const [sessionName, setSessionName] = useState("");
+  const [gameName, setGameName] = useState("");
   const [playerName, setPlayerName] = useState("");
-  const [playerLimit, setPlayerLimit] = useState(4);
+  const [userLimit, setUserLimit] = useState(4);
   const [timeLimit, setTimeLimit] = useState(4);
   const [errorMessages, setErrorMessages] = useState(Array<string>());
 
   const validate = (): boolean => {
     const tmpErrorMessages = [];
-    if (sessionName === "") {
+    if (gameName === "") {
       tmpErrorMessages.push("セッション名を入力してください");
     }
     if (playerName === "") {
@@ -36,8 +36,8 @@ const StartGamePage = () => {
           variant="outlined"
           fullWidth
           style={{ margin: "20px" }}
-          value={sessionName}
-          onChange={(e) => setSessionName(e.target.value)}
+          value={gameName}
+          onChange={(e) => setGameName(e.target.value)}
         />
 
         <Typography variant="h5">プレイヤー名</Typography>
@@ -58,8 +58,8 @@ const StartGamePage = () => {
           max={10}
           valueLabelDisplay="on"
           style={{ margin: "20px" }}
-          value={playerLimit}
-          onChange={(_, value) => setPlayerLimit(value as number)}
+          value={userLimit}
+          onChange={(_, value) => setUserLimit(value as number)}
         />
         <Typography variant="h5">制限時間 (分)</Typography>
         <Slider
@@ -95,22 +95,24 @@ const StartGamePage = () => {
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                  sessionName,
+                  gameName,
                   playerName,
-                  playerLimit,
+                  userLimit,
                   timeLimit,
                 }),
               })
                 .then((response) => {
                   if (!response.ok) {
-                    throw new Error("Failed to start the game");
+                    throw new Error(response.statusText);
                   }
                   return response.json();
                 })
                 .then((data) => {
-                  console.log("Game started successfully:", data);
+                  console.log("Game started successfully:", data[0]);
                   // ゲーム画面に遷移
-                  window.location.href = `/game?sessionId=${data.sessionId}`; // 例：sessionIdをURLパラメータとして渡す
+                  window.location.href = `/game-entry?sessionId=${encodeURIComponent(
+                    data[0].SessionId
+                  )}&entryWord=${encodeURIComponent(data[0].EntryWord)}`; // URLエンコードを追加して安全性を向上
                 })
                 .catch((error) => {
                   console.error("Error starting the game:", error);
