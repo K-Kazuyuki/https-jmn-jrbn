@@ -1,13 +1,13 @@
 import { FirebaseOptions } from "firebase/app";
 
 const firebaseConfig: FirebaseOptions = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "",
-  measurementId: import.meta.env.VITE_MEASUREMENT_ID || "",
+  apiKey: "AIzaSyCcIWnwh7iDoJFwaXErmXoCbJKp2z8p2hc",
+  authDomain: "courts-party.firebaseapp.com",
+  projectId: "courts-party",
+  storageBucket: "courts-party.firebasestorage.app",
+  messagingSenderId: "490143431038",
+  appId: "1:490143431038:web:d2bf4658887b2314339b2f",
+  measurementId: "G-1RY4771C7S",
 };
 
 export default firebaseConfig;
