@@ -122,7 +122,7 @@ const StartGamePage: React.FC<Props> = ({ userName }) => {
                 .then((data) => {
                   console.log("Game started successfully:", data[0]);
                   // ゲーム画面に遷移
-                  window.location.href = `/game-entry?sessionId=${encodeURIComponent(
+                  window.location.href = `/game?sessionId=${encodeURIComponent(
                     data[0].SessionId
                   )}`; // URLエンコードを追加して安全性を向上
                 })
