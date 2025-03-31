@@ -35,15 +35,15 @@ const Game: React.FC = () => {
         const [type, raw] = lines.trim().split(": ");
 
         if (type === "data" && raw) {
-          setText((prevText) => {
+          setText(() => {
             try {
               const parsedData = JSON.parse(raw);
               setPhase(parsedData.phase);
               setUsernames(parsedData.InGameUserName);
-              return raw;
+              return "";
             } catch (e) {
               console.error("Error parsing JSON:", e);
-              return prevText + "\nError parsing JSON"; // エラーメッセージを追加
+              return "Error parsing JSON"; // エラーメッセージを追加
             }
           });
         }
@@ -86,16 +86,16 @@ const Game: React.FC = () => {
     <div>
       <button onClick={handleStream}>Run</button>
       <pre>{text}</pre>
-      <h2>Users</h2>
-      <ul>
-        {usernames.map((userId, index) => (
-          <li key={index}>{userId}</li>
-        ))}
-      </ul>
       {(() => {
         switch (phase) {
           case 0:
-            return <GameEntry name={GameName} entryWord={EntryWord} />;
+            return (
+              <GameEntry
+                name={GameName}
+                entryWord={EntryWord}
+                usernames={usernames}
+              />
+            );
           default:
             return <div>Unknown phase</div>;
         }
