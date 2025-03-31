@@ -12,9 +12,9 @@ const Game: React.FC = () => {
   const isStreaming = useRef(false);
   const readerRef = useRef<ReadableStreamDefaultReader<Uint8Array> | null>(
     null
-  ); // reader を useRef で管理
+  );
 
-  const handleStream = async () => {
+  const startStream = async () => {
     isStreaming.current = true;
     try {
       const res = await fetch(`/api/gameStream?sessionId=${sessionId}`);
@@ -23,27 +23,28 @@ const Game: React.FC = () => {
         return;
       }
       const reader = res.body.getReader();
-      readerRef.current = reader; // reader を useRef に保存
+      readerRef.current = reader;
       const decoder = new TextDecoder();
 
       while (isStreaming.current) {
         const { value, done } = await reader.read();
-        if (done) break; // ストリームが終了したらループを抜ける
+        if (done) break;
         if (!value) continue;
 
         const lines = decoder.decode(value);
         const [type, raw] = lines.trim().split(": ");
 
         if (type === "data" && raw) {
-          setText(() => {
+          setText((prevText) => {
             try {
               const parsedData = JSON.parse(raw);
               setPhase(parsedData.phase);
-              setUsernames(parsedData.InGameUserName);
-              return "";
+              setUsernames(parsedData.InGameUserName || []); // 配列として更新
+              return raw; // JSON データを表示
             } catch (e) {
               console.error("Error parsing JSON:", e);
-              return "Error parsing JSON"; // エラーメッセージを追加
+              console.log("Raw data:", raw);
+              return prevText + "\nError parsing JSON";
             }
           });
         }
@@ -52,7 +53,7 @@ const Game: React.FC = () => {
       console.error("Error streaming data:", error);
     } finally {
       isStreaming.current = false;
-      readerRef.current?.cancel(); // ストリームをクローズ
+      readerRef.current?.cancel();
       readerRef.current = null;
     }
   };
@@ -77,14 +78,15 @@ const Game: React.FC = () => {
     fetchSessionData();
 
     return () => {
-      isStreaming.current = false; // アンマウント時にストリームを停止
-      readerRef.current?.cancel(); // ストリームをクローズ
+      isStreaming.current = false;
+      readerRef.current?.cancel();
     };
   }, []);
 
   return (
     <div>
-      <button onClick={handleStream}>Run</button>
+      <button onClick={startStream}>Run</button>{" "}
+      {/* クリック時にストリームを開始 */}
       <pre>{text}</pre>
       {(() => {
         switch (phase) {
