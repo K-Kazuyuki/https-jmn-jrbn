@@ -1,4 +1,4 @@
-import { List, ListSubheader, Typography } from "@mui/material";
+import { Button, List, ListSubheader, Typography } from "@mui/material";
 
 type Props = {
   name: string;
@@ -22,6 +22,18 @@ const GameEntry: React.FC<Props> = (prop) => {
           </Typography>
         ))}
       </List>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => {
+          // Handle game start logic here
+          console.log("ゲームを開始します");
+        }}
+        sx={{ margin: "20px" }}
+        disabled={prop.usernames.length < 2}
+      >
+        ゲームを開始する
+      </Button>
     </div>
   );
 };
