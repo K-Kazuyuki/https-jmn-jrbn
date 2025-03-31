@@ -3,36 +3,47 @@ import axios from "axios";
 import GameEntry from "./GameEntry";
 import { useState } from "react";
 
+// type Status = {
+//   phase: number;
+//   userIds: string[];
+// };
+
 const Game: React.FC = () => {
   const [sessionId, setSessionId] = React.useState("");
   const [GameName, setGameName] = React.useState("");
   const [EntryWord, setEntryWord] = React.useState("");
   const [phase, setPhase] = React.useState(0);
   const [text, setText] = useState("");
+  const [userIds, setUserIds] = React.useState<string[]>([]);
 
-  const handleClick = async () => {
+  const handleStream = async () => {
     const res = await fetch("/api/gameStream");
     if (!res.body) {
-      console.error("Response body is null or undefined");
+      console.error("Response body is null or undefined.");
       return;
     }
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
 
     while (true) {
-      const { done, value } = await reader.read();
-      console.log("done", done, value);
-      if (done) break;
+      const { value } = await reader.read();
       if (!value) continue;
 
       const lines = decoder.decode(value);
-      console.log("lines", lines);
       const [type, raw] = lines.trim().split(": ");
 
       if (type === "data" && raw) {
-        setText((prevText) =>
-          prevText ? prevText + " " + raw : prevText + raw
-        );
+        setText(() => {
+          try {
+            const parsedData = JSON.parse(raw);
+            setPhase(parsedData.phase);
+            setUserIds(parsedData.userIds);
+            return raw;
+          } catch (e) {
+            console.error("Error parsing JSON:", e);
+            return "Error parsing JSON";
+          }
+        });
       }
     }
   };
@@ -62,8 +73,14 @@ const Game: React.FC = () => {
 
   return (
     <div>
-      <button onClick={handleClick}>Run</button>
+      <button onClick={handleStream}>Run</button>
       <pre>{text}</pre>
+      <h2>Users</h2>
+      <ul>
+        {userIds.map((userId, index) => (
+          <li key={index}>{userId}</li>
+        ))}
+      </ul>
       {(() => {
         switch (phase) {
           case 0:
