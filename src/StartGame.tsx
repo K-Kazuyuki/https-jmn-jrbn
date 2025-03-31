@@ -1,5 +1,6 @@
 import { Button, Slider, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
+import axios from "axios";
 
 type Props = {
   userName: string;
@@ -29,7 +30,6 @@ const StartGamePage: React.FC<Props> = ({ userName }) => {
   };
 
   React.useEffect(() => {
-    // 必要に応じて初期化処理をここに記述
     setPlayerName(userName);
   }, [userName]);
 
@@ -98,32 +98,18 @@ const StartGamePage: React.FC<Props> = ({ userName }) => {
           style={{ margin: "20px" }}
           onClick={() => {
             if (validate()) {
-              fetch("/api/createGameSession", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
+              axios
+                .post("/api/createGameSession", {
                   gameName,
                   playerName,
                   userLimit,
                   timeLimit,
-                }),
-              })
-                .then(async (response) => {
-                  if (!response.ok) {
-                    const errorDetails = await response.json();
-                    throw new Error(
-                      errorDetails.message || response.statusText
-                    );
-                  }
-                  return response.json();
                 })
-                .then((data) => {
-                  console.log("Game started successfully:", data[0]);
+                .then((response) => {
+                  console.log("Game started successfully:", response.data[0]);
                   // ゲーム画面に遷移
                   window.location.href = `/game?sessionId=${encodeURIComponent(
-                    data[0].SessionId
+                    response.data[0].SessionId
                   )}`; // URLエンコードを追加して安全性を向上
                 })
                 .catch((error) => {
@@ -131,7 +117,9 @@ const StartGamePage: React.FC<Props> = ({ userName }) => {
                   // エラーメッセージを表示
                   alert(
                     `ゲームの開始に失敗しました: ${
-                      error.message || "詳細はコンソールを確認してください。"
+                      error.response?.data?.message ||
+                      error.message ||
+                      "詳細はコンソールを確認してください。"
                     }`
                   );
                 });

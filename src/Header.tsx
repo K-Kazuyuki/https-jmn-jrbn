@@ -18,15 +18,19 @@ const Header: React.FC<Props> = ({ name }) => {
   return (
     <AppBar position="fixed" color="primary" sx={{ top: 0 }}>
       <Toolbar>
-        <Typography variant="h5" sx={{ flexGrow: 1, textAlign: "center" }}>
+        <Typography variant="h5" sx={{ flexGrow: 1, textAlign: "left" }}>
           小説しりとり
         </Typography>
-        <Typography variant="body1" sx={{ marginRight: 2 }}>
-          {name}
-        </Typography>
-        <Button color="inherit" onClick={handleSignOut}>
-          ログアウト
-        </Button>
+        <div
+          style={{ marginLeft: "auto", display: "flex", alignItems: "center" }}
+        >
+          <Typography variant="body1" sx={{ marginRight: 2 }}>
+            {name}
+          </Typography>
+          <Button color="inherit" onClick={handleSignOut}>
+            ログアウト
+          </Button>
+        </div>
       </Toolbar>
     </AppBar>
   );

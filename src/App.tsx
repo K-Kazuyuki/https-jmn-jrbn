@@ -9,6 +9,7 @@ import Login from "./Login";
 import { useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
+import JoinGame from "./JoinGame";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -77,6 +78,7 @@ function App() {
           element={<StartGamePage userName={userName} />}
         />
         <Route path="/game" element={<Game />} />
+        <Route path="/join-game" element={<JoinGame />} />
       </Routes>
       <Footer />
     </BrowserRouter>

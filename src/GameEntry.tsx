@@ -1,7 +1,12 @@
-const GameEntry: React.FC = () => {
+type Props = {
+  name: string;
+  entryWord: string;
+};
+
+const GameEntry: React.FC<Props> = (prop) => {
   return (
     <div>
-      <h1>Game Entry</h1>
+      <h1>{prop.name}</h1>
     </div>
   );
 };
