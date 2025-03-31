@@ -1,74 +1,85 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import GameEntry from "./GameEntry";
-import { useState } from "react";
-
-// type Status = {
-//   phase: number;
-//   userIds: string[];
-// };
 
 const Game: React.FC = () => {
-  const [sessionId, setSessionId] = React.useState("");
-  const [GameName, setGameName] = React.useState("");
-  const [EntryWord, setEntryWord] = React.useState("");
-  const [phase, setPhase] = React.useState(0);
+  const [sessionId, setSessionId] = useState("");
+  const [GameName, setGameName] = useState("");
+  const [EntryWord, setEntryWord] = useState("");
+  const [phase, setPhase] = useState(0);
   const [text, setText] = useState("");
-  const [userIds, setUserIds] = React.useState<string[]>([]);
+  const [usernames, setUsernames] = useState<string[]>([]);
+  const isStreaming = useRef(false);
+  const readerRef = useRef<ReadableStreamDefaultReader<Uint8Array> | null>(
+    null
+  ); // reader を useRef で管理
 
   const handleStream = async () => {
-    const res = await fetch("/api/gameStream");
-    if (!res.body) {
-      console.error("Response body is null or undefined.");
-      return;
-    }
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-
-    while (true) {
-      const { value } = await reader.read();
-      if (!value) continue;
-
-      const lines = decoder.decode(value);
-      const [type, raw] = lines.trim().split(": ");
-
-      if (type === "data" && raw) {
-        setText(() => {
-          try {
-            const parsedData = JSON.parse(raw);
-            setPhase(parsedData.phase);
-            setUserIds(parsedData.userIds);
-            return raw;
-          } catch (e) {
-            console.error("Error parsing JSON:", e);
-            return "Error parsing JSON";
-          }
-        });
+    isStreaming.current = true;
+    try {
+      const res = await fetch(`/api/gameStream?sessionId=${sessionId}`);
+      if (!res.body) {
+        console.error("Response body is null or undefined.");
+        return;
       }
+      const reader = res.body.getReader();
+      readerRef.current = reader; // reader を useRef に保存
+      const decoder = new TextDecoder();
+
+      while (isStreaming.current) {
+        const { value, done } = await reader.read();
+        if (done) break; // ストリームが終了したらループを抜ける
+        if (!value) continue;
+
+        const lines = decoder.decode(value);
+        const [type, raw] = lines.trim().split(": ");
+
+        if (type === "data" && raw) {
+          setText((prevText) => {
+            try {
+              const parsedData = JSON.parse(raw);
+              setPhase(parsedData.phase);
+              setUsernames(parsedData.InGameUserName);
+              return raw;
+            } catch (e) {
+              console.error("Error parsing JSON:", e);
+              return prevText + "\nError parsing JSON"; // エラーメッセージを追加
+            }
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error streaming data:", error);
+    } finally {
+      isStreaming.current = false;
+      readerRef.current?.cancel(); // ストリームをクローズ
+      readerRef.current = null;
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchSessionData = async () => {
       const params = new URLSearchParams(window.location.search);
       const sessionIdFromParams = params.get("sessionId") || "";
       setSessionId(sessionIdFromParams);
       try {
-        await axios
-          .post("/api/getSessionDatas", {
-            sessionId: sessionIdFromParams,
-          })
-          .then((response) => {
-            setGameName(response.data[0].GameName);
-            setEntryWord(response.data[0].EntryWord);
-            setPhase(response.data[0].GamePhase);
-          });
+        const response = await axios.post("/api/getSessionDatas", {
+          sessionId: sessionIdFromParams,
+        });
+        setGameName(response.data[0].GameName);
+        setEntryWord(response.data[0].EntryWord);
+        setPhase(response.data[0].GamePhase);
       } catch (error) {
         console.error("Error fetching session data:", error);
       }
     };
 
     fetchSessionData();
+
+    return () => {
+      isStreaming.current = false; // アンマウント時にストリームを停止
+      readerRef.current?.cancel(); // ストリームをクローズ
+    };
   }, []);
 
   return (
@@ -77,7 +88,7 @@ const Game: React.FC = () => {
       <pre>{text}</pre>
       <h2>Users</h2>
       <ul>
-        {userIds.map((userId, index) => (
+        {usernames.map((userId, index) => (
           <li key={index}>{userId}</li>
         ))}
       </ul>

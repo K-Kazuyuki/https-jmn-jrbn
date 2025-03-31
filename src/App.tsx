@@ -70,16 +70,21 @@ function App() {
   return (
     <BrowserRouter>
       <Header name={userName || ""} />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/start-game"
-          element={<StartGamePage userName={userName} />}
-        />
-        <Route path="/game" element={<Game />} />
-        <Route path="/join-game" element={<JoinGame />} />
-      </Routes>
+      <div
+        className="content"
+        style={{ marginTop: "80px", marginBottom: "80px" }}
+      >
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/start-game"
+            element={<StartGamePage userName={userName} />}
+          />
+          <Route path="/game" element={<Game />} />
+          <Route path="/join-game" element={<JoinGame />} />
+        </Routes>
+      </div>
       <Footer />
     </BrowserRouter>
   );

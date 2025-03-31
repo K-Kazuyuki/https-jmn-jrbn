@@ -104,6 +104,7 @@ const StartGamePage: React.FC<Props> = ({ userName }) => {
                   playerName,
                   userLimit,
                   timeLimit,
+                  userId: localStorage.getItem("userId"),
                 })
                 .then((response) => {
                   console.log("Game started successfully:", response.data[0]);

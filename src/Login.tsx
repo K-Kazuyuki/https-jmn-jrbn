@@ -46,6 +46,7 @@ const Login: React.FC = () => {
         .then((data) => {
           console.log("User registered successfully:", data);
         });
+      localStorage.setItem("userId", userCredential.user.uid);
 
       window.location.href = "/";
     } catch (error) {
@@ -63,6 +64,7 @@ const Login: React.FC = () => {
         password
       );
       console.log("User signed in:", userCredential.user);
+      localStorage.setItem("userId", userCredential.user.uid);
       window.location.href = "/";
     } catch (error) {
       console.error("Sign-in error:", error);
