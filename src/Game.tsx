@@ -39,8 +39,8 @@ const Game: React.FC = () => {
             try {
               const parsedData = JSON.parse(raw);
               setPhase(parsedData.phase);
-              setUsernames(parsedData.InGameUserName || []); // 配列として更新
-              return raw; // JSON データを表示
+              setUsernames(parsedData.InGameUserName || []);
+              return raw;
             } catch (e) {
               console.error("Error parsing JSON:", e);
               console.log("Raw data:", raw);
@@ -83,10 +83,14 @@ const Game: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (sessionId) {
+      startStream();
+    }
+  }, [sessionId]); // sessionId を依存配列に追加
+
   return (
     <div>
-      <button onClick={startStream}>Run</button>{" "}
-      {/* クリック時にストリームを開始 */}
       <pre>{text}</pre>
       {(() => {
         switch (phase) {
