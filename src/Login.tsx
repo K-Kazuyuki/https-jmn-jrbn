@@ -17,6 +17,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [isRegister, setIsRegister] = useState<boolean>(false);
+  const [errorMessage, setErrorMessages] = useState<string>();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,6 +50,7 @@ const Login: React.FC = () => {
       window.location.href = "/";
     } catch (error) {
       console.error("Sign-up error:", error);
+      setErrorMessages(getErrorMessage(error));
     }
   };
 
@@ -64,7 +66,30 @@ const Login: React.FC = () => {
       window.location.href = "/";
     } catch (error) {
       console.error("Sign-in error:", error);
+      setErrorMessages(getErrorMessage(error));
     }
+  };
+  const getErrorMessage = (error: unknown): string => {
+    if (error instanceof Error) {
+      switch (error.message) {
+        case "Firebase: Error (auth/email-already-in-use).":
+          return "このメールアドレスはすでに使用されています。";
+        case "Firebase: Error (auth/invalid-email).":
+          return "無効なメールアドレスです。";
+        case "Firebase: Error (auth/operation-not-allowed).":
+          return "この操作は許可されていません。";
+        case "Firebase: Error (auth/weak-password).":
+          return "パスワードが弱すぎます。";
+        case "Firebase: Error (auth/user-not-found).":
+          return "ユーザーが見つかりません。";
+        case "Firebase: Error (auth/invalid-credential).":
+          return "E-mail かパスワードが間違っています．";
+        case "Firebase: Password should be at least 6 characters (auth/weak-password).":
+          return "パスワードは6文字以上である必要があります。";
+      }
+      return error.message;
+    }
+    return "An unknown error occurred.";
   };
 
   return (
@@ -99,6 +124,9 @@ const Login: React.FC = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        <Typography variant="subtitle1" color="red">
+          {errorMessage}
+        </Typography>
         <Button
           fullWidth
           variant="contained"
