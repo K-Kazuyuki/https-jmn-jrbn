@@ -45,6 +45,8 @@ function App() {
 
         const data = await response.json();
         setUserName(data.name);
+        localStorage.setItem("userId", user.uid);
+        localStorage.setItem("userName", data.name);
       } catch (error) {
         console.error("Error getting user name:", error);
       }

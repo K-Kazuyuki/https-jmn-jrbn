@@ -2,13 +2,18 @@ import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import GameEntry from "./GameEntry";
 
+export type StatusJson = {
+  phase: number;
+  InGameUserName: string[];
+};
+
 const Game: React.FC = () => {
   const [sessionId, setSessionId] = useState("");
   const [GameName, setGameName] = useState("");
   const [EntryWord, setEntryWord] = useState("");
   const [phase, setPhase] = useState(0);
   const [text, setText] = useState("");
-  const [usernames, setUsernames] = useState<string[]>([]);
+  const [statusJson, setStatusJson] = useState({} as StatusJson);
   const isStreaming = useRef(false);
   const readerRef = useRef<ReadableStreamDefaultReader<Uint8Array> | null>(
     null
@@ -16,6 +21,8 @@ const Game: React.FC = () => {
 
   const startStream = async () => {
     isStreaming.current = true;
+    let buffer = ""; // チャンクを蓄積するバッファ
+
     try {
       const res = await fetch(`/api/gameStream?sessionId=${sessionId}`);
       if (!res.body) {
@@ -31,22 +38,30 @@ const Game: React.FC = () => {
         if (done) break;
         if (!value) continue;
 
-        const lines = decoder.decode(value);
-        const [type, raw] = lines.trim().split(": ");
+        const chunk = decoder.decode(value);
+        buffer += chunk; // チャンクをバッファに追加
 
-        if (type === "data" && raw) {
-          setText((prevText) => {
-            try {
-              const parsedData = JSON.parse(raw);
-              setPhase(parsedData.phase);
-              setUsernames(parsedData.InGameUserName || []);
-              return raw;
-            } catch (e) {
-              console.error("Error parsing JSON:", e);
-              console.log("Raw data:", raw);
-              return prevText + "\nError parsing JSON";
-            }
-          });
+        // データ区切り文字が見つかるまで待機
+        while (buffer.includes("\n\n")) {
+          const lines = buffer.substring(0, buffer.indexOf("\n\n"));
+          buffer = buffer.substring(buffer.indexOf("\n\n") + 2); // 処理済みのデータをバッファから削除
+
+          const [type, raw] = lines.trim().split(": ");
+
+          if (type === "data" && raw) {
+            setText((prevText) => {
+              try {
+                const parsedData = JSON.parse(raw);
+                setPhase(parsedData.phase);
+                setStatusJson(parsedData);
+                return raw;
+              } catch (e) {
+                console.error("Error parsing JSON:", e);
+                console.log("Raw data:", raw);
+                return prevText + "\nError parsing JSON";
+              }
+            });
+          }
         }
       }
     } catch (error) {
@@ -57,7 +72,6 @@ const Game: React.FC = () => {
       readerRef.current = null;
     }
   };
-
   useEffect(() => {
     const fetchSessionData = async () => {
       const params = new URLSearchParams(window.location.search);
@@ -99,7 +113,7 @@ const Game: React.FC = () => {
               <GameEntry
                 name={GameName}
                 entryWord={EntryWord}
-                usernames={usernames}
+                statusJson={statusJson}
               />
             );
           default:

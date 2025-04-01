@@ -1,9 +1,10 @@
 import { Button, List, ListSubheader, Typography } from "@mui/material";
+import { StatusJson } from "./Game";
 
 type Props = {
   name: string;
   entryWord: string;
-  usernames: string[];
+  statusJson: StatusJson;
 };
 
 const GameEntry: React.FC<Props> = (prop) => {
@@ -16,7 +17,7 @@ const GameEntry: React.FC<Props> = (prop) => {
       <Typography variant="h6">{prop.name}</Typography>
       <List>
         <ListSubheader>参加者</ListSubheader>
-        {prop.usernames.map((username, index) => (
+        {prop.statusJson.InGameUserName.map((username, index) => (
           <Typography key={index} variant="h6">
             {username}
           </Typography>
@@ -30,7 +31,7 @@ const GameEntry: React.FC<Props> = (prop) => {
           console.log("ゲームを開始します");
         }}
         sx={{ margin: "20px" }}
-        disabled={prop.usernames.length < 2}
+        disabled={prop.statusJson.InGameUserName.length < 2}
       >
         ゲームを開始する
       </Button>

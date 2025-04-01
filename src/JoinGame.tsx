@@ -5,7 +5,9 @@ const JoinGame: React.FC = () => {
   const [entryWord, setEntryWord] = useState("");
   const [errorMessages, setErrorMessages] = useState("");
   const [sessionId, setSessionId] = useState("");
-  const [playerName, setPlayerName] = useState("");
+  const [playerName, setPlayerName] = useState(
+    localStorage.getItem("userName") || ""
+  );
   const getSessionId = async () => {
     await axios
       .post("/api/getSessionId", { entryWord: entryWord })
@@ -40,7 +42,7 @@ const JoinGame: React.FC = () => {
       })
       .catch((error) => {
         console.error("Error joining game:", error);
-        setErrorMessages("参加に失敗しました。" + error.message);
+        setErrorMessages("参加に失敗しました。" + error.response.data);
       });
   };
 
